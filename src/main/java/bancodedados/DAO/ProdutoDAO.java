@@ -7,8 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.pbkdf2.Strings;
+
 import main.java.bancodedados.connector.Connect;
-import main.java.bancodedados.dominio.Funcionario;
+import main.java.bancodedados.dominio.Categoria;
 import main.java.bancodedados.dominio.Produto;
 
 public class ProdutoDAO {
@@ -48,35 +50,10 @@ public class ProdutoDAO {
 		}
 	}
 
-	public void atualizarDadosFuncionario(Funcionario funcionario) {
-
-		String sql = "UPDATE funcionario SET nome = ?, cpf = ?, endereco = ?, telefone = ?, funcao = ?"
-				+ "WHERE id = ?";
-
-		Connection conexao = null;
-		PreparedStatement pstm = null;
-
-		try {
-			conexao = Connect.createConnection();
-			pstm = conexao.prepareStatement(sql);
-
-			pstm.setString(1, funcionario.getNome());
-			pstm.setString(2, funcionario.getCpf());
-			pstm.setString(3, funcionario.getEndereco());
-			pstm.setString(4, funcionario.getTelefone());
-			pstm.setString(5, funcionario.getFuncao().getFuncao());
-			pstm.setInt(6, funcionario.getId());
-
-			pstm.execute();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	@SuppressWarnings("null")
-	public void deletarFuncionario(Funcionario funcionario) {
+	public void deletarProduto(Produto produto) {
 
-		String sql = "DELETE FROM funcionario WHERE id = ?";
+		String sql = "DELETE FROM produto WHERE id = ?";
 
 		Connection conexao = null;
 		PreparedStatement pstm = null;
@@ -84,21 +61,21 @@ public class ProdutoDAO {
 		try {
 			pstm = conexao.prepareStatement(sql);
 
-			pstm.setInt(1, funcionario.getId());
+			pstm.setInt(1, produto.getId());
 			pstm.execute();
 
-			System.out.println("Cadastro de Funcion�rio exclu�do.");
+			System.out.println("Cadastro de Produto exclu�do.");
 
 		} catch (SQLException e) {
 			e.getMessage();
 		}
 	}
 
-	public List<Funcionario> listarFuncionarios() {
+	public List<Produto> listarProdutos() {
 
-		String sql = "SELECT * FROM empregado";
+		String sql = "SELECT * FROM produto";
 
-		List<Funcionario> lista = new ArrayList<>();
+		List<Produto> produtos = new ArrayList<>();
 		Connection conexao = null;
 
 		try {
@@ -106,19 +83,18 @@ public class ProdutoDAO {
 			ResultSet resultado = pstm.executeQuery();
 
 			while (resultado.next()) {
-				Funcionario func = new Funcionario();
-				func.setNome(resultado.getString("nome"));
-				func.setCpf(resultado.getString("cpf"));
-				func.setEndereco(resultado.getString("endereco"));
-				func.setTelefone(resultado.getString("telefone"));
-				func.getFuncao().setFuncao(resultado.getString("funcao"));
+				Produto produto = new Produto();
+				produto.setDescricao(resultado.getString("descricao"));
+				produto.setPreco(resultado.getDouble("preco"));
+				produto.setQuantidade(resultado.getInt("quantidade"));
+//				produto.setCategoria(resultado.getString("categoria"));
 
-				lista.add(func);
+				produtos.add(produto);
 			}
 		} catch (SQLException e) {
 			e.getMessage();
 		}
-		return lista;
+		return produtos;
 	}
 
 	// Produto
